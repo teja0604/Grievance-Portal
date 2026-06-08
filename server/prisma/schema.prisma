@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  STAFF
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       Role     @default(STUDENT)
+  department String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  raisedComplaints    Complaint[] @relation("RaisedComplaints")
+  assignedComplaints  Complaint[] @relation("AssignedComplaints")
+  feedbacks           Feedback[]  @relation("UserFeedbacks")
+  staffFeedbacks      Feedback[]  @relation("StaffFeedbacks")
+}
+
+model Complaint {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  category        String
+  status          Status   @default(PENDING)
+  imageUrl        String?
+  studentId       String
+  assignedStaffId String?
+  dueInDays       Int      @default(3)
+  resolutionNotes String?
+  staffUpdates    Json     @default("[]")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  student       User       @relation("RaisedComplaints", fields: [studentId], references: [id], onDelete: Cascade)
+  assignedStaff User?      @relation("AssignedComplaints", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  feedbacks     Feedback[]
+}
+
+model Feedback {
+  id          String   @id @default(uuid())
+  rating      Int
+  comment     String?
+  userId      String
+  complaintId String
+  staffId     String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user      User      @relation("UserFeedbacks", fields: [userId], references: [id], onDelete: Cascade)
+  staff     User?     @relation("StaffFeedbacks", fields: [staffId], references: [id], onDelete: SetNull)
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+}
