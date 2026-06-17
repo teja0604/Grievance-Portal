@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-scripts/config/webpackDevServer.config.js b/node_modules/react-scripts/config/webpackDevServer.config.js
+index 522a81b..93fb013 100644
+--- a/node_modules/react-scripts/config/webpackDevServer.config.js
++++ b/node_modules/react-scripts/config/webpackDevServer.config.js
+@@ -43,7 +43,7 @@ module.exports = function (proxy, allowedHost) {
+     // really know what you're doing with a special environment variable.
+     // Note: ["localhost", ".localhost"] will support subdomains - but we might
+     // want to allow setting the allowedHosts manually for more complex setups
+-    allowedHosts: disableFirewall ? 'all' : [allowedHost],
++    allowedHosts: disableFirewall ? 'all' : [allowedHost || 'localhost'],
+     headers: {
+       'Access-Control-Allow-Origin': '*',
+       'Access-Control-Allow-Methods': '*',
